@@ -6,6 +6,9 @@ There's a frood who really knows where his towel is.
 2.4.2 (unreleased)
 ^^^^^^^^^^^^^^^^^^
 
+- Add Twitter Cards metadata (closes `#65`_).
+  [rodfersou]
+
 - Use Plone's registry instead of the ``portal_properties`` tool to store package configuration (closes `#1`_).
   [hvelarde]
 
@@ -283,3 +286,4 @@ There's a frood who really knows where his towel is.
 .. _`#38`: https://github.com/collective/sc.social.like/issues/38
 .. _`#39`: https://github.com/collective/sc.social.like/issues/39
 .. _`#56`: https://github.com/collective/sc.social.like/issues/56
+.. _`#65`: https://github.com/collective/sc.social.like/issues/65
