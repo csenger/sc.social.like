@@ -8,6 +8,7 @@ from sc.social.like.plugins.interfaces import IPlugin
 from sc.social.like.plugins.pinterest import browser
 from sc.social.like.testing import INTEGRATION_TESTING
 from sc.social.like.testing import load_image
+from sc.social.like.tests.api_hacks import set_image_field
 from zope.component import getUtilitiesFor
 from zope.component import getUtility
 from zope.interface import alsoProvides
@@ -71,9 +72,9 @@ class PluginViewsTest(unittest.TestCase):
         portal.invokeFactory('News Item', 'my-newsitem')
         portal.invokeFactory('Image', 'my-image')
         self.newsitem = portal['my-newsitem']
-        self.newsitem.setImage(load_image(1024, 768))
+        set_image_field(self.newsitem, load_image(1024, 768), 'image/png')
         self.image = portal['my-image']
-        self.image.setImage(load_image(1024, 768))
+        set_image_field(self.image, load_image(1024, 768), 'image/png')
 
     def image_url(self, obj, field='image', scale='large'):
 

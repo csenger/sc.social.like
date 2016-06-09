@@ -11,6 +11,7 @@ from sc.social.like.plugins.facebook.utils import fix_iso
 from sc.social.like.plugins.interfaces import IPlugin
 from sc.social.like.testing import INTEGRATION_TESTING
 from sc.social.like.testing import load_image
+from sc.social.like.tests.api_hacks import set_image_field
 from zope.component import getUtilitiesFor
 from zope.component import getUtility
 from zope.interface import alsoProvides
@@ -76,13 +77,15 @@ class PluginViewsTest(unittest.TestCase):
         portal.invokeFactory('Image', 'my-image-bmp')
         self.document = portal['my-document']
         self.newsitem = portal['my-newsitem']
-        self.newsitem.setImage(load_image(1024, 768))
+        set_image_field(self.newsitem, load_image(1024, 768), 'image/png')
         self.newsitem_bmp = portal['my-newsitem-bmp']
-        self.newsitem_bmp.setImage(load_image(640, 480, format='BMP'))
+        set_image_field(
+            self.newsitem_bmp, load_image(640, 480, format='BMP'), 'image/bmp')
         self.image = portal['my-image']
-        self.image.setImage(load_image(1024, 768))
+        set_image_field(self.image, load_image(1024, 768), 'image/png')
         self.image_bmp = portal['my-image-bmp']
-        self.image_bmp.setImage(load_image(640, 480, format='BMP'))
+        set_image_field(
+            self.image_bmp, load_image(640, 480, format='BMP'), 'image/bmp')
 
     def test_plugin_view(self):
         plugin = self.plugin
@@ -193,7 +196,7 @@ class PluginViewsTest(unittest.TestCase):
         self.assertEqual(view.image_type(), 'image/png')
 
         # Set a larger image
-        image.setImage(load_image(1920, 1080))
+        set_image_field(image, load_image(1920, 1080), 'image/png')
 
         plugin_view = plugin.view()
         view = image.restrictedTraverse(plugin_view)
@@ -215,7 +218,7 @@ class PluginViewsTest(unittest.TestCase):
         self.assertEqual(view.image_height(), 480)
 
         # Set a larger image
-        image.setImage(load_image(1920, 1080))
+        set_image_field(image, load_image(1920, 1080), 'image/png')
 
         plugin_view = plugin.view()
         view = image.restrictedTraverse(plugin_view)
@@ -226,7 +229,7 @@ class PluginViewsTest(unittest.TestCase):
     def test_plugin_view_image_large(self):
         plugin = self.plugin
         image = self.image
-        image.setImage(load_image(1920, 1080))
+        set_image_field(image, load_image(1920, 1080), 'image/png')
 
         plugin_view = plugin.view()
         view = image.restrictedTraverse(plugin_view)
@@ -267,7 +270,7 @@ class PluginViewsTest(unittest.TestCase):
     def test_plugin_view_newsitem_large(self):
         plugin = self.plugin
         newsitem = self.newsitem
-        newsitem.setImage(load_image(1920, 1080))
+        set_image_field(newsitem, load_image(1920, 1080), 'image/png')
 
         plugin_view = plugin.view()
         view = newsitem.restrictedTraverse(plugin_view)
