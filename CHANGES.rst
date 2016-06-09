@@ -9,6 +9,9 @@ There's a frood who really knows where his towel is.
 - Added Telegram plugin (closes `#52`_).
   [rodfersou]
 
+- Update package dependencies.
+  [hvelarde]
+
 - Use Plone's registry instead of the ``portal_properties`` tool to store package configuration (closes `#1`_).
   [hvelarde]
 
