@@ -7,6 +7,7 @@ from sc.social.like.browser.viewlets import SocialMetadataViewlet
 from sc.social.like.interfaces import ISocialLikeSettings
 from sc.social.like.interfaces import ISocialLikeLayer
 from sc.social.like.testing import INTEGRATION_TESTING
+from sc.social.like.testing import IS_PLONE_5
 from zope.interface import alsoProvides
 
 import unittest
@@ -46,11 +47,11 @@ class MetadataViewletTestCase(unittest.TestCase):
         viewlet = self.viewlet(self.document)
         self.assertTrue(viewlet.enabled())
 
-    def test_disabled_on_edit_document(self):
-        request = self.layer['request']
-        request.set('ACTUAL_URL', self.document.absolute_url() + '/edit')
-        html = self.document.atct_edit()
-        self.assertNotIn('og:site_name', html)
+    @unittest.skipIf(IS_PLONE_5, 'Plone 5 renders this information by default')
+    def test_metadata_viewlet_disabled_on_edit_document(self):
+        view = api.content.get_view(
+            name='edit', context=self.document, request=self.request)
+        self.assertNotIn('og:site_name', view())
 
     def test_render(self):
         viewlet = self.viewlet(self.document)
@@ -84,11 +85,10 @@ class LikeViewletTestCase(unittest.TestCase):
         viewlet = self.viewlet(self.document)
         self.assertTrue(viewlet.enabled())
 
-    def test_disabled_on_edit_document(self):
-        request = self.layer['request']
-        request.set('ACTUAL_URL', self.document.absolute_url() + '/edit')
-        html = self.document.atct_edit()
-        self.assertNotIn('id="viewlet-social-like"', html)
+    def test_social_viewlet_disabled_on_edit_document(self):
+        view = api.content.get_view(
+            name='edit', context=self.document, request=self.request)
+        self.assertNotIn('id="viewlet-social-like"', view())
 
     def test_render(self):
         viewlet = self.viewlet(self.document)
