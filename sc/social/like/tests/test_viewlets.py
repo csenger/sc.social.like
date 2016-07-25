@@ -49,8 +49,7 @@ class MetadataViewletTestCase(unittest.TestCase):
 
     @unittest.skipIf(IS_PLONE_5, 'Plone 5 renders this information by default')
     def test_metadata_viewlet_disabled_on_edit_document(self):
-        view = api.content.get_view(
-            name='edit', context=self.document, request=self.request)
+        view = self.document.restrictedTraverse('edit')
         self.assertNotIn('og:site_name', view())
 
     def test_render(self):
@@ -86,8 +85,7 @@ class LikeViewletTestCase(unittest.TestCase):
         self.assertTrue(viewlet.enabled())
 
     def test_social_viewlet_disabled_on_edit_document(self):
-        view = api.content.get_view(
-            name='edit', context=self.document, request=self.request)
+        view = self.document.restrictedTraverse('edit')
         self.assertNotIn('id="viewlet-social-like"', view())
 
     def test_render(self):

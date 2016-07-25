@@ -17,8 +17,10 @@ try:
     pkg_resources.get_distribution('plone.app.contenttypes')
 except pkg_resources.DistributionNotFound:
     from plone.app.testing import PLONE_FIXTURE
+    DEXTERITY_ONLY = False
 else:
     from plone.app.contenttypes.testing import PLONE_APP_CONTENTTYPES_FIXTURE as PLONE_FIXTURE
+    DEXTERITY_ONLY = True
 
 IS_PLONE_5 = api.env.plone_version().startswith('5')
 
