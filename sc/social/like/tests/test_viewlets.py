@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 from plone import api
-from plone.app.testing import setRoles
-from plone.app.testing import TEST_USER_ID
 from sc.social.like.browser.viewlets import SocialLikesViewlet
 from sc.social.like.browser.viewlets import SocialMetadataViewlet
 from sc.social.like.interfaces import ISocialLikeSettings
@@ -15,17 +13,28 @@ import unittest
 do_not_track = ISocialLikeSettings.__identifier__ + '.do_not_track'
 
 
-class MetadataViewletTestCase(unittest.TestCase):
-
+class BaseViewletTestCase(unittest.TestCase):
     layer = INTEGRATION_TESTING
 
     def setUp(self):
         self.portal = self.layer['portal']
         self.request = self.layer['request']
         alsoProvides(self.portal.REQUEST, ISocialLikeLayer)
-        setRoles(self.portal, TEST_USER_ID, ['Manager'])
-        self.portal.invokeFactory('Document', 'my-document')
-        self.document = self.portal['my-document']
+
+        with api.env.adopt_roles(['Manager']):
+            self.document = api.content.create(
+                self.portal, 'Document', 'my-document')
+
+    def _get_edit_view_for_object(self, obj):
+        """Return the edit view for the specified object.
+        Archetypes does not have a '@@edit' view as Dexterity does.
+        """
+        # aliases are stored in the context of the portal_types tool
+        name = self.portal.portal_types[obj.portal_type].aliases['edit']
+        return obj.restrictedTraverse(name)
+
+
+class MetadataViewletTestCase(BaseViewletTestCase):
 
     def viewlet(self, context=None):
         context = context or self.portal
@@ -49,7 +58,7 @@ class MetadataViewletTestCase(unittest.TestCase):
 
     @unittest.skipIf(IS_PLONE_5, 'Plone 5 renders this information by default')
     def test_metadata_viewlet_disabled_on_edit_document(self):
-        view = self.document.restrictedTraverse('edit')
+        view = self._get_edit_view_for_object(self.document)
         self.assertNotIn('og:site_name', view())
 
     def test_render(self):
@@ -58,17 +67,7 @@ class MetadataViewletTestCase(unittest.TestCase):
         self.assertGreater(len(html), 0)
 
 
-class LikeViewletTestCase(unittest.TestCase):
-
-    layer = INTEGRATION_TESTING
-
-    def setUp(self):
-        self.portal = self.layer['portal']
-        self.request = self.layer['request']
-        alsoProvides(self.portal.REQUEST, ISocialLikeLayer)
-        setRoles(self.portal, TEST_USER_ID, ['Manager'])
-        self.portal.invokeFactory('Document', 'my-document')
-        self.document = self.portal['my-document']
+class LikeViewletTestCase(BaseViewletTestCase):
 
     def viewlet(self, context=None):
         context = context or self.portal
@@ -85,7 +84,7 @@ class LikeViewletTestCase(unittest.TestCase):
         self.assertTrue(viewlet.enabled())
 
     def test_social_viewlet_disabled_on_edit_document(self):
-        view = self.document.restrictedTraverse('edit')
+        view = self._get_edit_view_for_object(self.document)
         self.assertNotIn('id="viewlet-social-like"', view())
 
     def test_render(self):
